@@ -1,0 +1,1035 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>🇺🇸 Houston FIRST Championship Trip Planner</title>
+  <style>
+    :root {
+      --primary: #1a3a6b;
+      --accent: #e63946;
+      --gold: #f4a261;
+      --green: #2a9d8f;
+      --light: #f8f9fa;
+      --dark: #212529;
+      --card-bg: #ffffff;
+      --border: #dee2e6;
+      --shadow: 0 4px 16px rgba(0,0,0,0.10);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: #eef2f7;
+      color: var(--dark);
+    }
+
+    /* HERO */
+    .hero {
+      background: linear-gradient(135deg, #1a3a6b 0%, #0d6efd 60%, #e63946 100%);
+      color: #fff;
+      padding: 48px 24px 36px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '🇺🇸';
+      font-size: 140px;
+      position: absolute;
+      opacity: 0.07;
+      right: -10px;
+      top: -20px;
+    }
+    .hero h1 { font-size: 2.2rem; font-weight: 800; letter-spacing: -0.5px; }
+    .hero p { margin-top: 10px; font-size: 1.1rem; opacity: 0.88; }
+    .hero .badges { margin-top: 18px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+    .badge {
+      background: rgba(255,255,255,0.18);
+      border: 1px solid rgba(255,255,255,0.35);
+      border-radius: 20px;
+      padding: 6px 16px;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    /* NAV TABS */
+    .tabs {
+      display: flex;
+      gap: 0;
+      background: var(--primary);
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .tabs::-webkit-scrollbar { display: none; }
+    .tab-btn {
+      background: none;
+      border: none;
+      color: rgba(255,255,255,0.7);
+      padding: 14px 20px;
+      cursor: pointer;
+      font-size: 0.88rem;
+      font-weight: 600;
+      white-space: nowrap;
+      border-bottom: 3px solid transparent;
+      transition: all 0.2s;
+    }
+    .tab-btn:hover { color: #fff; background: rgba(255,255,255,0.08); }
+    .tab-btn.active { color: #fff; border-bottom-color: var(--gold); }
+
+    /* MAIN LAYOUT */
+    .container { max-width: 1100px; margin: 0 auto; padding: 28px 16px 60px; }
+
+    /* TAB PANELS */
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* SECTION TITLE */
+    .section-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 3px solid var(--gold);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* CARDS */
+    .card {
+      background: var(--card-bg);
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+      padding: 24px;
+      margin-bottom: 20px;
+    }
+    .card h3 {
+      font-size: 1.1rem;
+      color: var(--primary);
+      margin-bottom: 14px;
+      font-weight: 700;
+    }
+
+    /* GRID */
+    .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
+
+    /* FLIGHT OPTION CARDS */
+    .flight-card {
+      border-radius: 12px;
+      border: 2px solid var(--border);
+      padding: 20px;
+      background: #fff;
+      transition: box-shadow 0.2s, border-color 0.2s;
+      position: relative;
+    }
+    .flight-card:hover { box-shadow: var(--shadow); border-color: var(--primary); }
+    .flight-card.best { border-color: var(--gold); }
+    .flight-card .ribbon {
+      position: absolute;
+      top: -1px; right: -1px;
+      background: var(--gold);
+      color: #fff;
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 4px 12px;
+      border-radius: 0 10px 0 10px;
+    }
+    .flight-card h4 { font-size: 1rem; font-weight: 700; color: var(--primary); margin-bottom: 8px; }
+    .flight-route {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: var(--dark);
+      margin-bottom: 10px;
+    }
+    .flight-route .arrow { color: #aaa; font-size: 1.1rem; }
+    .flight-meta { font-size: 0.82rem; color: #666; margin-bottom: 6px; }
+    .price-tag {
+      display: inline-block;
+      background: #e8f5e9;
+      color: #2e7d32;
+      font-weight: 700;
+      font-size: 0.9rem;
+      padding: 4px 12px;
+      border-radius: 20px;
+      margin-top: 8px;
+    }
+    .flight-legs { margin: 10px 0; }
+    .leg-row {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      padding: 6px 0;
+      border-bottom: 1px dashed #eee;
+      font-size: 0.84rem;
+    }
+    .leg-row:last-child { border-bottom: none; }
+    .leg-label { min-width: 60px; font-weight: 600; color: var(--primary); }
+    .layover-row { background: #fff8e1; border-radius: 6px; padding: 5px 8px; font-size: 0.8rem; color: #795548; margin: 4px 0; }
+
+    /* TABLE */
+    table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+    th { background: var(--primary); color: #fff; padding: 10px 12px; text-align: left; }
+    td { padding: 9px 12px; border-bottom: 1px solid #eee; }
+    tr:nth-child(even) td { background: #f8f9fa; }
+    tr:hover td { background: #e8f0fe; }
+
+    /* TIMELINE */
+    .timeline { position: relative; padding-left: 36px; }
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 14px; top: 0; bottom: 0;
+      width: 3px;
+      background: linear-gradient(to bottom, var(--primary), var(--green));
+      border-radius: 3px;
+    }
+    .timeline-item { position: relative; margin-bottom: 24px; }
+    .timeline-dot {
+      position: absolute;
+      left: -28px;
+      top: 4px;
+      width: 22px; height: 22px;
+      border-radius: 50%;
+      background: var(--primary);
+      color: #fff;
+      font-size: 0.7rem;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700;
+      box-shadow: 0 0 0 3px #fff, 0 0 0 5px var(--primary);
+    }
+    .timeline-date {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 4px;
+    }
+    .timeline-title { font-size: 1rem; font-weight: 700; color: var(--primary); margin-bottom: 6px; }
+    .timeline-body { font-size: 0.88rem; color: #555; line-height: 1.6; }
+    .timeline-body ul { padding-left: 18px; margin-top: 6px; }
+    .timeline-body li { margin-bottom: 4px; }
+
+    /* CHECKLIST */
+    .checklist-group { margin-bottom: 20px; }
+    .checklist-group h4 {
+      font-size: 0.85rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-bottom: 10px;
+      padding: 6px 14px;
+      border-radius: 6px;
+    }
+    .urgent h4 { background: #fde8e8; color: var(--accent); }
+    .soon h4 { background: #fff8e1; color: #e65100; }
+    .prep h4 { background: #e8f5e9; color: #2e7d32; }
+    .check-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 10px 14px;
+      border-radius: 8px;
+      margin-bottom: 6px;
+      background: #fafafa;
+      border: 1px solid #eee;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .check-item:hover { background: #f0f4ff; }
+    .check-item input[type=checkbox] { width: 18px; height: 18px; cursor: pointer; accent-color: var(--primary); margin-top: 1px; flex-shrink: 0; }
+    .check-item label { cursor: pointer; font-size: 0.88rem; line-height: 1.5; }
+    .check-item input:checked + label { text-decoration: line-through; color: #aaa; }
+
+    /* ACTIVITY CARDS */
+    .activity-card {
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      padding: 16px;
+      background: #fff;
+      text-align: center;
+      transition: box-shadow 0.2s;
+    }
+    .activity-card:hover { box-shadow: var(--shadow); }
+    .activity-icon { font-size: 2.2rem; margin-bottom: 8px; }
+    .activity-card h4 { font-size: 0.95rem; font-weight: 700; color: var(--primary); margin-bottom: 4px; }
+    .activity-card .dist { font-size: 0.78rem; color: #888; margin-bottom: 6px; }
+    .activity-card .cost { font-size: 0.82rem; font-weight: 600; color: var(--green); }
+
+    /* BUDGET BAR */
+    .budget-item { margin-bottom: 14px; }
+    .budget-label { display: flex; justify-content: space-between; font-size: 0.86rem; margin-bottom: 5px; }
+    .budget-bar { height: 10px; background: #e9ecef; border-radius: 5px; overflow: hidden; }
+    .budget-fill { height: 100%; border-radius: 5px; background: linear-gradient(90deg, var(--primary), #0d6efd); }
+
+    /* HOTEL CARDS */
+    .hotel-card {
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      padding: 16px;
+      background: #fff;
+    }
+    .hotel-card.top { border-color: var(--gold); background: #fffef5; }
+    .hotel-card h4 { font-size: 0.95rem; font-weight: 700; color: var(--primary); margin-bottom: 4px; }
+    .hotel-dist { font-size: 0.78rem; color: #888; margin-bottom: 6px; }
+    .hotel-note { font-size: 0.82rem; color: #555; }
+
+    /* PILLS */
+    .pill {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 12px;
+      font-size: 0.76rem;
+      font-weight: 600;
+    }
+    .pill-green { background: #e8f5e9; color: #2e7d32; }
+    .pill-blue { background: #e3f2fd; color: #1565c0; }
+    .pill-red { background: #fde8e8; color: #c62828; }
+    .pill-gold { background: #fff8e1; color: #e65100; }
+
+    /* ALERT BOX */
+    .alert {
+      border-radius: 10px;
+      padding: 14px 18px;
+      margin-bottom: 16px;
+      font-size: 0.88rem;
+      line-height: 1.6;
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+    }
+    .alert-icon { font-size: 1.3rem; flex-shrink: 0; margin-top: 1px; }
+    .alert-warning { background: #fff8e1; border-left: 4px solid #f4a261; }
+    .alert-info { background: #e3f2fd; border-left: 4px solid #1565c0; }
+    .alert-success { background: #e8f5e9; border-left: 4px solid #2a9d8f; }
+
+    /* CONTACT CARDS */
+    .contact-card {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px;
+      background: #fff;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+    }
+    .contact-icon { font-size: 1.8rem; }
+    .contact-card h5 { font-size: 0.88rem; font-weight: 700; color: var(--primary); }
+    .contact-card p { font-size: 0.82rem; color: #555; }
+
+    /* PROGRESS */
+    .progress-section { margin-bottom: 10px; }
+    #progress-bar-fill {
+      height: 8px;
+      background: linear-gradient(90deg, var(--green), #52b788);
+      border-radius: 4px;
+      transition: width 0.4s;
+    }
+    #progress-text { font-size: 0.8rem; color: #888; margin-top: 4px; }
+
+    /* PRINT BUTTON */
+    .print-btn {
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      padding: 10px 24px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .print-btn:hover { background: #0d2f5e; }
+
+    @media (max-width: 600px) {
+      .hero h1 { font-size: 1.5rem; }
+      .grid-2 { grid-template-columns: 1fr; }
+      .grid-3 { grid-template-columns: 1fr 1fr; }
+    }
+    @media print {
+      .tabs, .print-btn { display: none !important; }
+      .tab-panel { display: block !important; }
+      .hero { background: var(--primary) !important; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <h1>✈️ Houston FIRST Championship Trip</h1>
+  <p>Singapore → Houston, Texas &nbsp;|&nbsp; April 27 – May 3, 2026</p>
+  <div class="badges">
+    <span class="badge">👨‍👧 2 Travellers</span>
+    <span class="badge">🤖 FLL World Festival</span>
+    <span class="badge">🏟️ George R. Brown Convention Center</span>
+    <span class="badge">🗓️ Competition: Apr 29 – May 2</span>
+  </div>
+</div>
+
+<!-- TAB NAV -->
+<div class="tabs">
+  <button class="tab-btn active" onclick="switchTab('overview')">🗺️ Overview</button>
+  <button class="tab-btn" onclick="switchTab('flights')">✈️ Flights</button>
+  <button class="tab-btn" onclick="switchTab('visa')">🛂 Visa & Entry</button>
+  <button class="tab-btn" onclick="switchTab('hotel')">🏨 Hotels</button>
+  <button class="tab-btn" onclick="switchTab('itinerary')">📅 Itinerary</button>
+  <button class="tab-btn" onclick="switchTab('activities')">🎡 Activities</button>
+  <button class="tab-btn" onclick="switchTab('budget')">💰 Budget</button>
+  <button class="tab-btn" onclick="switchTab('checklist')">✅ Checklist</button>
+  <button class="tab-btn" onclick="switchTab('contacts')">📞 Contacts</button>
+</div>
+
+<div class="container">
+
+  <!-- ============ OVERVIEW ============ -->
+  <div id="tab-overview" class="tab-panel active">
+    <div class="section-title">🗺️ Trip Overview</div>
+
+    <div class="grid-2">
+      <div class="card">
+        <h3>👨‍👧 Travellers</h3>
+        <table>
+          <tr><td><strong>Parent</strong></td><td>Singapore Citizen</td></tr>
+          <tr><td><strong>Arielle</strong></td><td>11 years old, Singapore Citizen</td></tr>
+          <tr><td><strong>Purpose</strong></td><td>FIRST FLL World Festival</td></tr>
+          <tr><td><strong>Depart SIN</strong></td><td>April 27, 2026 (evening)</td></tr>
+          <tr><td><strong>Return SIN</strong></td><td>~May 5, 2026 (via overnight flight)</td></tr>
+        </table>
+      </div>
+      <div class="card">
+        <h3>🏟️ Competition Details</h3>
+        <table>
+          <tr><td><strong>Event</strong></td><td>FIRST Championship – World Festival</td></tr>
+          <tr><td><strong>Dates</strong></td><td>April 29 – May 2, 2026</td></tr>
+          <tr><td><strong>Venue</strong></td><td>George R. Brown Convention Center</td></tr>
+          <tr><td><strong>Address</strong></td><td>1001 Avenida De Las Americas, Houston TX 77010</td></tr>
+          <tr><td><strong>Info</strong></td><td><a href="https://www.firstchampionship.org/houston" target="_blank">firstchampionship.org/houston</a></td></tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="alert alert-warning">
+      <span class="alert-icon">⚠️</span>
+      <div><strong>Book flights & hotel immediately!</strong> FIRST Championship draws 100+ countries. Flights to Houston IAH in late April fill up fast. Every day you wait = higher prices and fewer seat options.</div>
+    </div>
+
+    <div class="alert alert-info">
+      <span class="alert-icon">💡</span>
+      <div><strong>Venue Note:</strong> The 2026 competition is at George R. Brown Convention Center (Downtown Houston) — <em>not</em> NRG Center. Book hotels in Downtown Houston for walkability to the venue.</div>
+    </div>
+
+    <div class="card">
+      <h3>🗓️ Trip at a Glance</h3>
+      <table>
+        <thead><tr><th>Date</th><th>Day</th><th>Activity</th></tr></thead>
+        <tbody>
+          <tr><td>Apr 27</td><td>Sun</td><td>✈️ Depart Singapore (evening flight)</td></tr>
+          <tr><td>Apr 28</td><td>Mon</td><td>🛬 Arrive Houston IAH (~afternoon), check in, rest</td></tr>
+          <tr><td>Apr 29</td><td>Tue</td><td>🤖 Competition Day 1 + Discovery Green evening</td></tr>
+          <tr><td>Apr 30</td><td>Wed</td><td>🤖 Competition Day 2 + Houston Aquarium (optional)</td></tr>
+          <tr><td>May 1</td><td>Thu</td><td>🤖 Competition Day 3 + Space Center Houston</td></tr>
+          <tr><td>May 2</td><td>Fri</td><td>🏆 Competition Final Day + Celebration Dinner</td></tr>
+          <tr><td>May 3</td><td>Sat</td><td>🛍️ Souvenir / Museum morning → ✈️ Depart IAH</td></tr>
+          <tr><td>~May 5</td><td>Mon</td><td>🏠 Arrive Singapore</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ============ FLIGHTS ============ -->
+  <div id="tab-flights" class="tab-panel">
+    <div class="section-title">✈️ Flight Options</div>
+
+    <div class="alert alert-warning">
+      <span class="alert-icon">⚠️</span>
+      <div><strong>Family Rule: Minimum 3-hour layover.</strong> With an 11-year-old, never book tighter. You need time to deplane, walk to the gate, use bathrooms, eat, and have buffer for delays.</div>
+    </div>
+
+    <div class="alert alert-info">
+      <span class="alert-icon">🛬</span>
+      <div><strong>Always fly into IAH</strong> (George Bush Intercontinental) — NOT HOU (Hobby). IAH is Houston's international hub, ~30 min from Downtown.</div>
+    </div>
+
+    <div class="grid-2">
+
+      <div class="flight-card best">
+        <div class="ribbon">🥇 CHEAPEST</div>
+        <h4>Option A – Korean Air</h4>
+        <div class="flight-route">SIN <span class="arrow">→</span> ICN <span class="arrow">→</span> IAH</div>
+        <div class="flight-legs">
+          <div class="leg-row"><span class="leg-label">Leg 1</span><span>Singapore → Seoul Incheon &nbsp;<strong>~6.5 hrs</strong></span></div>
+          <div class="layover-row">⏱️ Layover ICN: 3–4 hrs &nbsp;✅ Kid-friendly airport, free cultural activities</div>
+          <div class="leg-row"><span class="leg-label">Leg 2</span><span>Seoul Incheon → Houston IAH &nbsp;<strong>~13.5 hrs</strong></span></div>
+        </div>
+        <div class="flight-meta">⏱️ Total: <strong>~23–24 hrs</strong> &nbsp;|&nbsp; Stops: 1 (ICN)</div>
+        <div class="price-tag">SGD 1,400–1,800 /pax return</div><br/>
+        <a href="https://www.koreanair.com" target="_blank" class="pill pill-blue">Book at koreanair.com →</a>
+      </div>
+
+      <div class="flight-card">
+        <div class="ribbon" style="background:#1a3a6b;">🥈 UNITED</div>
+        <h4>Option B – United Airlines</h4>
+        <div class="flight-route">SIN <span class="arrow">→</span> NRT <span class="arrow">→</span> IAH</div>
+        <div class="flight-legs">
+          <div class="leg-row"><span class="leg-label">Leg 1</span><span>Singapore → Tokyo Narita &nbsp;<strong>~7 hrs</strong> (ANA/SQ codeshare)</span></div>
+          <div class="layover-row">⏱️ Layover NRT: 3 hrs &nbsp;✅ Quiet, organised, great food</div>
+          <div class="leg-row"><span class="leg-label">Leg 2</span><span>Tokyo Narita → Houston IAH &nbsp;<strong>~13.5 hrs</strong> (United UA 837)</span></div>
+        </div>
+        <div class="flight-meta">⏱️ Total: <strong>~23.5–24.5 hrs</strong> &nbsp;|&nbsp; Stops: 1 (NRT)</div>
+        <div class="price-tag">SGD 1,500–1,900 /pax return</div><br/>
+        <a href="https://www.united.com" target="_blank" class="pill pill-blue">Book at united.com →</a>
+      </div>
+
+      <div class="flight-card">
+        <h4>Option C – Cathay Pacific</h4>
+        <div class="flight-route">SIN <span class="arrow">→</span> HKG <span class="arrow">→</span> IAH</div>
+        <div class="flight-legs">
+          <div class="leg-row"><span class="leg-label">Leg 1</span><span>Singapore → Hong Kong &nbsp;<strong>~3.5 hrs</strong> (short & easy for child)</span></div>
+          <div class="layover-row">⏱️ Layover HKG: 3–4 hrs &nbsp;✅ Excellent kids' facilities</div>
+          <div class="leg-row"><span class="leg-label">Leg 2</span><span>Hong Kong → Houston IAH &nbsp;<strong>~16.5 hrs</strong> ⚠️ Very long leg</span></div>
+        </div>
+        <div class="flight-meta">⏱️ Total: <strong>~23–24 hrs</strong> &nbsp;|&nbsp; Stops: 1 (HKG)</div>
+        <div class="price-tag">SGD 1,600–2,200 /pax return</div><br/>
+        <a href="https://www.cathaypacific.com" target="_blank" class="pill pill-blue">Book at cathaypacific.com →</a>
+      </div>
+
+      <div class="flight-card">
+        <h4>Option D – ANA (All Nippon Airways)</h4>
+        <div class="flight-route">SIN <span class="arrow">→</span> NRT <span class="arrow">→</span> IAH</div>
+        <div class="flight-legs">
+          <div class="leg-row"><span class="leg-label">Leg 1</span><span>Singapore → Tokyo Narita &nbsp;<strong>~7 hrs</strong></span></div>
+          <div class="layover-row">⏱️ Layover NRT: 3 hrs &nbsp;✅ Japanese hospitality, calm airport</div>
+          <div class="leg-row"><span class="leg-label">Leg 2</span><span>Tokyo Narita → Houston IAH &nbsp;<strong>~13.5 hrs</strong></span></div>
+        </div>
+        <div class="flight-meta">⏱️ Total: <strong>~23.5–24.5 hrs</strong> &nbsp;|&nbsp; Stops: 1 (NRT)</div>
+        <div class="price-tag">SGD 1,450–1,850 /pax return</div><br/>
+        <a href="https://www.ana.co.jp" target="_blank" class="pill pill-blue">Book at ana.co.jp →</a>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:20px;">
+      <h3>🏆 Quick Comparison</h3>
+      <table>
+        <thead><tr><th>Airline</th><th>Route</th><th>Total Time</th><th>Price (SGD/pax)</th><th>Best For</th></tr></thead>
+        <tbody>
+          <tr><td>🥇 Korean Air</td><td>SIN–ICN–IAH</td><td>~23–24 hrs</td><td><strong>1,400–1,800</strong></td><td>Budget + great layover airport</td></tr>
+          <tr><td>🥈 United Airlines</td><td>SIN–NRT–IAH</td><td>~24 hrs</td><td>1,500–1,900</td><td>United miles / smooth IAH arrival</td></tr>
+          <tr><td>ANA</td><td>SIN–NRT–IAH</td><td>~23.5 hrs</td><td>1,450–1,850</td><td>Comfort + Japanese service</td></tr>
+          <tr><td>Cathay Pacific</td><td>SIN–HKG–IAH</td><td>~23–24 hrs</td><td>1,600–2,200</td><td>Short first leg (easy for child)</td></tr>
+          <tr><td style="color:#c62828">❌ Avoid</td><td>Any via LAX/SFO/DFW</td><td>25+ hrs</td><td>Variable</td><td>US domestic = customs stress</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <h3>📋 Booking Tips</h3>
+      <ul style="font-size:0.88rem; line-height:2; padding-left:20px;">
+        <li>Compare on <strong>Skyscanner.com</strong> or <strong>Google Flights</strong>, then book direct on the airline site</li>
+        <li>Always select <strong>seats together</strong> at time of booking (parent + child, side-by-side)</li>
+        <li>Economy baggage: typically 1 × 23kg checked bag per person — verify with your airline</li>
+        <li>Depart SIN <strong>Apr 27 evening (~8–11pm)</strong> → Arrive IAH <strong>Apr 28 afternoon (~2–5pm)</strong></li>
+        <li>Return <strong>May 3 late morning</strong> from IAH → Arrive Singapore ~May 5</li>
+        <li>Houston CDT = UTC-5 &nbsp;|&nbsp; Singapore SGT = UTC+8 &nbsp;|&nbsp; <strong>13 hours behind SIN</strong></li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ============ VISA ============ -->
+  <div id="tab-visa" class="tab-panel">
+    <div class="section-title">🛂 Visa & US Entry</div>
+
+    <div class="alert alert-success">
+      <span class="alert-icon">✅</span>
+      <div><strong>Great news!</strong> Singapore is on the US Visa Waiver Program (VWP). You do <em>not</em> need a US visa. You need to apply for ESTA instead — it's quick and cheap.</div>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <h3>📋 ESTA – What You Need to Know</h3>
+        <table>
+          <tr><td><strong>Official Site</strong></td><td><a href="https://esta.cbp.dhs.gov" target="_blank">esta.cbp.dhs.gov</a></td></tr>
+          <tr><td><strong>Cost</strong></td><td>USD $21 per person</td></tr>
+          <tr><td><strong>Processing</strong></td><td>Usually instant (allow up to 72 hrs)</td></tr>
+          <tr><td><strong>Validity</strong></td><td>2 years or until passport expiry</td></tr>
+          <tr><td><strong>Max stay</strong></td><td>Up to 90 days per trip</td></tr>
+          <tr><td><strong>How early</strong></td><td>Apply at least 2–3 weeks before travel</td></tr>
+        </table>
+        <div style="margin-top:14px;">
+          <a href="https://esta.cbp.dhs.gov" target="_blank" style="display:inline-block; background:var(--primary); color:#fff; padding:10px 20px; border-radius:8px; font-weight:600; text-decoration:none; font-size:0.88rem;">Apply ESTA Now →</a>
+        </div>
+      </div>
+      <div class="card">
+        <h3>⚠️ Critical Points</h3>
+        <ul style="font-size:0.88rem; line-height:2.1; padding-left:18px;">
+          <li><strong>Apply separately for both of you</strong> — Arielle needs her own ESTA as a minor</li>
+          <li>Use ONLY the official <strong>esta.cbp.dhs.gov</strong> site — many scam sites charge more</li>
+          <li>Print your ESTA approval confirmation and bring it to check-in</li>
+          <li>ESTA does NOT guarantee entry — final decision is by CBP officer at the airport</li>
+          <li>If either ESTA is denied, you'd need to apply for a B-2 visa (allow 4–6 weeks)</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>🛬 At Houston IAH – What to Expect</h3>
+      <table>
+        <thead><tr><th>Step</th><th>What Happens</th><th>Tips</th></tr></thead>
+        <tbody>
+          <tr><td>1. Land at IAH</td><td>Follow signs to Immigration / CBP</td><td>Keep passports + ESTA printout accessible</td></tr>
+          <tr><td>2. CBP Kiosk</td><td>Use APC kiosk or download <strong>Mobile Passport</strong> app before travel</td><td>Speeds up processing significantly</td></tr>
+          <tr><td>3. CBP Officer</td><td>Brief interview — purpose of visit, where staying</td><td>Stay calm, answer honestly: "Robotics competition"</td></tr>
+          <tr><td>4. Baggage</td><td>Collect checked luggage</td><td>IAH international bags usually 20–40 min</td></tr>
+          <tr><td>5. Customs</td><td>Declare any food items</td><td>Don't bring fruits, meats, or plants from Singapore</td></tr>
+          <tr><td>6. Exit</td><td>Head to Arrivals, get Uber/Lyft</td><td>Rideshare pickup at Terminal D/E lower level</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <h3>📱 Recommended App: Mobile Passport</h3>
+      <p style="font-size:0.88rem; line-height:1.7; color:#555;">Download the <strong>Mobile Passport Control</strong> app (free, official US government app) before departing Singapore. This allows faster processing at US Customs by submitting your passport and declaration digitally before you land. Works for foreign nationals with ESTA.</p>
+    </div>
+  </div>
+
+  <!-- ============ HOTEL ============ -->
+  <div id="tab-hotel" class="tab-panel">
+    <div class="section-title">🏨 Accommodation</div>
+
+    <div class="alert alert-success">
+      <span class="alert-icon">🏨</span>
+      <div><strong>Book via FIRST's Official Housing Block</strong> — FIRST Championship partners with ConferenceDirect for 175+ reviewed hotels at negotiated rates. Watch <a href="https://www.firstchampionship.org/houston" target="_blank">firstchampionship.org/houston</a> for the booking link.</div>
+    </div>
+
+    <div class="alert alert-info">
+      <span class="alert-icon">📍</span>
+      <div><strong>Stay in Downtown Houston</strong> — near George R. Brown Convention Center. Check-in: Apr 28 | Check-out: May 3 | <strong>5 nights</strong></div>
+    </div>
+
+    <div class="grid-2">
+      <div class="hotel-card top">
+        <span class="pill pill-gold">⭐ Top Pick</span>
+        <h4 style="margin-top:8px;">Marriott Marquis Houston</h4>
+        <div class="hotel-dist">📍 0 min – Skybridge directly to GRB Convention Center</div>
+        <div class="hotel-note">The absolute best choice — no outdoor walking needed to reach the competition venue. Premium hotel, excellent for families. Book early — fills up first during FIRST Championship.</div>
+      </div>
+      <div class="hotel-card top">
+        <span class="pill pill-blue">🏅 Runner Up</span>
+        <h4 style="margin-top:8px;">Hilton Americas–Houston</h4>
+        <div class="hotel-dist">📍 2 min walk – Adjacent to GRB</div>
+        <div class="hotel-note">Directly adjacent to the convention center. Premium choice with excellent facilities. Often part of the FIRST ConferenceDirect block.</div>
+      </div>
+      <div class="hotel-card">
+        <h4>Hyatt Regency Houston</h4>
+        <div class="hotel-dist">📍 ~10 min walk from GRB</div>
+        <div class="hotel-note">Good value option. Family-friendly. Easy access to downtown dining and Metro Red Line.</div>
+      </div>
+      <div class="hotel-card">
+        <h4>Marriott Houston Downtown</h4>
+        <div class="hotel-dist">📍 ~15 min walk from GRB</div>
+        <div class="hotel-note">More affordable alternative. Well-located in downtown core with good transport links.</div>
+      </div>
+      <div class="hotel-card">
+        <h4>Crowne Plaza Houston Downtown</h4>
+        <div class="hotel-dist">📍 ~10 min walk from GRB</div>
+        <div class="hotel-note">Good mid-range option. IHG points-eligible. Comfortable for a 5-night stay.</div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:20px;">
+      <h3>🛎️ Check-in Strategy</h3>
+      <table>
+        <tr><td><strong>Check-in</strong></td><td>April 28 (Mon) — after arriving from Singapore</td></tr>
+        <tr><td><strong>Check-out</strong></td><td>May 3 (Sat) — morning, before airport departure</td></tr>
+        <tr><td><strong>Total nights</strong></td><td>5 nights</td></tr>
+        <tr><td><strong>Early check-in</strong></td><td>Request at booking — you'll arrive after a 20+ hr flight and will want to freshen up</td></tr>
+        <tr><td><strong>Luggage storage</strong></td><td>If room not ready, hotel can store bags while you rest in lobby or grab food</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- ============ ITINERARY ============ -->
+  <div id="tab-itinerary" class="tab-panel">
+    <div class="section-title">📅 Day-by-Day Itinerary</div>
+
+    <div class="card">
+      <div class="timeline">
+
+        <div class="timeline-item">
+          <div class="timeline-dot">27</div>
+          <div class="timeline-date">Sunday, April 27 – Singapore</div>
+          <div class="timeline-title">✈️ Departure Day</div>
+          <div class="timeline-body">
+            <ul>
+              <li>Depart Singapore Changi Airport evening flight (~8–11pm)</li>
+              <li>Check-in 3 hours before departure for international long-haul</li>
+              <li>Pack tablet/iPad with movies & games for Arielle for the long flight</li>
+              <li>Healthy snacks for the journey (granola bars, crackers)</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-dot">28</div>
+          <div class="timeline-date">Monday, April 28 – Houston</div>
+          <div class="timeline-title">🛬 Arrival & Recovery Day</div>
+          <div class="timeline-body">
+            <ul>
+              <li>Land at IAH (~2–5pm CDT after ~23 hrs travel + time zone shift)</li>
+              <li>Clear customs — use Mobile Passport app for faster processing</li>
+              <li>Uber/Lyft to hotel (~45 min, ~USD 45–60)</li>
+              <li>Check in — request early check-in if available</li>
+              <li>Light dinner nearby: <strong>Phoenicia Specialty Foods</strong> (international cuisine) or hotel dining</li>
+              <li><span class="pill pill-red">Priority: REST</span> — jet lag will hit hard (13-hr time difference). Early bedtime is essential before competition starts tomorrow</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-dot">29</div>
+          <div class="timeline-date">Tuesday, April 29 – Competition</div>
+          <div class="timeline-title">🤖 Competition Day 1</div>
+          <div class="timeline-body">
+            <ul>
+              <li>Morning: Follow team schedule — check-in, badging, practice runs</li>
+              <li>Parent: Attend as spectator and supporter — bring snacks for Arielle</li>
+              <li>Lunch: Available at the convention center (various vendors)</li>
+              <li>Evening: Stroll through <strong>Discovery Green</strong> (free, 2 min walk from GRB) — enjoy the park, food trucks, and some fresh air after an intense day</li>
+              <li>Dinner: Explore downtown Houston restaurants near the hotel</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-dot">30</div>
+          <div class="timeline-date">Wednesday, April 30 – Competition</div>
+          <div class="timeline-title">🤖 Competition Day 2</div>
+          <div class="timeline-body">
+            <ul>
+              <li>Competition continues — follow FIRST event schedule</li>
+              <li>Tip: Explore the <strong>Downtown Tunnels</strong> (7-mile underground walkway connecting downtown buildings — free, great for a mid-day break)</li>
+              <li>Evening option: <strong>Downtown Aquarium Houston</strong> (~10 min walk from GRB, ~USD $25/person) — Arielle will love the shark tunnel!</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-dot">1</div>
+          <div class="timeline-date">Thursday, May 1 – Competition</div>
+          <div class="timeline-title">🤖 Competition Day 3</div>
+          <div class="timeline-body">
+            <ul>
+              <li>Competition Day 3 — semi-finals typically happen around this time</li>
+              <li>Evening: <strong>⭐ Space Center Houston</strong> — NASA's official visitor center; absolutely perfect for an FLL participant!</li>
+              <li>Address: 1601 NASA Pkwy, Houston TX 77058 (~30 min by Uber)</li>
+              <li>Uber each way: ~USD 25–30 | Tickets: ~USD 35–40/person | <strong>Book online in advance</strong> — sells out during FIRST Championship week</li>
+              <li>Allow 2–3 hours minimum; they have full-size rockets, space shuttle exhibits, and astronaut experiences</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-dot">2</div>
+          <div class="timeline-date">Friday, May 2 – Competition</div>
+          <div class="timeline-title">🏆 Competition Final Day</div>
+          <div class="timeline-body">
+            <ul>
+              <li>Finals and Award Ceremony — cheer Arielle on! 🎉</li>
+              <li>Be present for ALL award ceremonies — FLL gives many awards beyond first place</li>
+              <li>Evening: <strong>Celebration dinner!</strong> — treat Arielle to a special dinner regardless of results. She competed at the WORLD championship!</li>
+              <li>Suggestions: <strong>Brennan's of Houston</strong> (upscale Texas cuisine) or <strong>Pappadeaux Seafood Kitchen</strong> (Houston institution)</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-dot">3</div>
+          <div class="timeline-date">Saturday, May 3 – Departure</div>
+          <div class="timeline-title">✈️ Departure Day</div>
+          <div class="timeline-body">
+            <ul>
+              <li>Morning: Last-minute souvenir shopping at hotel gift shop or nearby</li>
+              <li>Optional: <strong>Houston Museum of Natural Science</strong> (15 min walk, opens 9am) if flight is late</li>
+              <li>Check out of hotel — store luggage with concierge if needed</li>
+              <li><span class="pill pill-red">Allow 3 hours before flight</span> for international departures</li>
+              <li>Uber/Lyft to IAH (~45 min) — book in advance or order at hotel lobby</li>
+              <li>Depart Houston for Singapore 🌏</li>
+            </ul>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ ACTIVITIES ============ -->
+  <div id="tab-activities" class="tab-panel">
+    <div class="section-title">🎡 Kid-Friendly Activities</div>
+
+    <div class="grid-3">
+      <div class="activity-card">
+        <div class="activity-icon">🚀</div>
+        <h4>Space Center Houston</h4>
+        <div class="dist">📍 ~30 min drive from GRB</div>
+        <div class="cost">USD $35–40 / person</div>
+        <p style="font-size:0.8rem; color:#666; margin-top:8px;">NASA's official visitor center. Full-size rockets, space shuttle, Mission Control. <strong>MUST-DO</strong> for an FLL participant — pure magic!</p>
+        <div style="margin-top:10px;"><a href="https://spacecenter.org" target="_blank" class="pill pill-blue">Book tickets →</a></div>
+      </div>
+
+      <div class="activity-card">
+        <div class="activity-icon">🌿</div>
+        <h4>Discovery Green</h4>
+        <div class="dist">📍 2 min walk from GRB</div>
+        <div class="cost">FREE</div>
+        <p style="font-size:0.8rem; color:#666; margin-top:8px;">Beautiful urban park with water features, events, food trucks. Perfect for a relaxing after-competition evening stroll.</p>
+      </div>
+
+      <div class="activity-card">
+        <div class="activity-icon">🦈</div>
+        <h4>Downtown Aquarium</h4>
+        <div class="dist">📍 ~10 min walk from GRB</div>
+        <div class="cost">USD $25–30 / person</div>
+        <p style="font-size:0.8rem; color:#666; margin-top:8px;">Walk-through shark tunnel, stingray touch pools, Ferris wheel. Great after a competition day.</p>
+        <div style="margin-top:10px;"><a href="https://www.aquariumrestaurants.com/downtownaquariumhouston" target="_blank" class="pill pill-blue">More info →</a></div>
+      </div>
+
+      <div class="activity-card">
+        <div class="activity-icon">🦕</div>
+        <h4>Museum of Natural Science</h4>
+        <div class="dist">📍 ~15 min walk from GRB</div>
+        <div class="cost">USD $25–30 / person</div>
+        <p style="font-size:0.8rem; color:#666; margin-top:8px;">World-class dinosaur hall, gems, space exhibits. Great for science-curious kids like Arielle.</p>
+      </div>
+
+      <div class="activity-card">
+        <div class="activity-icon">🐘</div>
+        <h4>Houston Zoo</h4>
+        <div class="dist">📍 ~15 min drive from GRB</div>
+        <div class="cost">USD $25–30 / person</div>
+        <p style="font-size:0.8rem; color:#666; margin-top:8px;">900+ animal species. Nice open-air environment — good for a breather after days indoors at the convention center.</p>
+      </div>
+
+      <div class="activity-card">
+        <div class="activity-icon">🎢</div>
+        <h4>Kemah Boardwalk</h4>
+        <div class="dist">📍 ~45 min drive from GRB</div>
+        <div class="cost">Variable (rides ~$5–10 each)</div>
+        <p style="font-size:0.8rem; color:#666; margin-top:8px;">Amusement rides, seafood restaurants on the waterfront. Fun half-day if you have time on May 3 morning.</p>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:20px;">
+      <h3>🗺️ Getting to Activities (Rideshare Guide)</h3>
+      <table>
+        <thead><tr><th>Activity</th><th>Uber Est.</th><th>Best Day</th></tr></thead>
+        <tbody>
+          <tr><td>Space Center Houston</td><td>~USD 25–30 each way</td><td>May 1 evening (after Day 3)</td></tr>
+          <tr><td>Discovery Green</td><td>Walk (2 min)</td><td>Any evening</td></tr>
+          <tr><td>Downtown Aquarium</td><td>Walk or ~USD 8–10</td><td>Apr 30 evening</td></tr>
+          <tr><td>Museum of Natural Science</td><td>Walk or ~USD 8–10</td><td>May 3 morning</td></tr>
+          <tr><td>Houston Zoo</td><td>~USD 12–18 each way</td><td>If competition ends early</td></tr>
+          <tr><td>Kemah Boardwalk</td><td>~USD 35–45 each way</td><td>May 3 morning (if time allows)</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ============ BUDGET ============ -->
+  <div id="tab-budget" class="tab-panel">
+    <div class="section-title">💰 Budget Estimate (2 PAX)</div>
+
+    <div class="grid-2">
+      <div class="card">
+        <h3>📊 Cost Breakdown</h3>
+        <div class="progress-section">
+          <div class="budget-item">
+            <div class="budget-label"><span>✈️ Flights (2 pax, return, Economy)</span><span>SGD 3,500–5,500</span></div>
+            <div class="budget-bar"><div class="budget-fill" style="width:75%;"></div></div>
+          </div>
+          <div class="budget-item">
+            <div class="budget-label"><span>🏨 Hotel (5 nights, mid-range)</span><span>SGD 1,500–2,500</span></div>
+            <div class="budget-bar"><div class="budget-fill" style="width:50%; background: linear-gradient(90deg,#2a9d8f,#52b788);"></div></div>
+          </div>
+          <div class="budget-item">
+            <div class="budget-label"><span>🚗 Transport (Uber, airport)</span><span>SGD 300–500</span></div>
+            <div class="budget-bar"><div class="budget-fill" style="width:20%; background:linear-gradient(90deg,#f4a261,#e9c46a);"></div></div>
+          </div>
+          <div class="budget-item">
+            <div class="budget-label"><span>🍽️ Food & Dining (7 days × 2)</span><span>SGD 600–1,000</span></div>
+            <div class="budget-bar"><div class="budget-fill" style="width:25%; background:linear-gradient(90deg,#e63946,#f4a261);"></div></div>
+          </div>
+          <div class="budget-item">
+            <div class="budget-label"><span>🎡 Activities & Attractions</span><span>SGD 400–600</span></div>
+            <div class="budget-bar"><div class="budget-fill" style="width:15%; background:linear-gradient(90deg,#457b9d,#1d3557);"></div></div>
+          </div>
+          <div class="budget-item">
+            <div class="budget-label"><span>🛂 ESTA (2 × USD $21)</span><span>SGD ~60</span></div>
+            <div class="budget-bar"><div class="budget-fill" style="width:3%; background:#aaa;"></div></div>
+          </div>
+          <div class="budget-item">
+            <div class="budget-label"><span>🛍️ Misc / Souvenirs</span><span>SGD 200–400</span></div>
+            <div class="budget-bar"><div class="budget-fill" style="width:10%; background:linear-gradient(90deg,#6d6875,#b5838d);"></div></div>
+          </div>
+        </div>
+        <div style="margin-top:16px; padding:14px; background:#e8f0fe; border-radius:8px; display:flex; justify-content:space-between; align-items:center;">
+          <span style="font-weight:700; font-size:1rem; color:var(--primary);">Total Estimate</span>
+          <span style="font-weight:800; font-size:1.25rem; color:var(--accent);">SGD 6,560 – 10,560</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>💡 Money-Saving Tips</h3>
+        <ul style="font-size:0.87rem; line-height:2.1; padding-left:18px;">
+          <li>Book Korean Air (cheapest flight option) to save SGD 500–800 on flights</li>
+          <li>Use FIRST's <strong>ConferenceDirect</strong> hotel block for negotiated rates</li>
+          <li>Book <strong>Space Center Houston</strong> tickets online (cheaper than at-door)</li>
+          <li>Pack snacks from Singapore for the competition days</li>
+          <li>Discovery Green is <strong>free</strong> — great evening option after long days</li>
+          <li>Use credit card with no foreign transaction fees (e.g., DBS Altitude)</li>
+          <li>USD $200–300 in cash for tips, small vendors, and vending machines</li>
+          <li>Most restaurants in downtown Houston accept Visa/Mastercard</li>
+        </ul>
+
+        <h3 style="margin-top:20px;">💵 Currency & Payments</h3>
+        <table>
+          <tr><td>Exchange rate (approx)</td><td>USD 1 ≈ SGD 1.35</td></tr>
+          <tr><td>Cash recommended</td><td>USD $200–300 total</td></tr>
+          <tr><td>Cards</td><td>Visa / Mastercard widely accepted</td></tr>
+          <tr><td>Tipping culture</td><td>15–20% at restaurants is expected in USA</td></tr>
+          <tr><td>Notify your bank</td><td>Before travelling to avoid card blocks</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ CHECKLIST ============ -->
+  <div id="tab-checklist" class="tab-panel">
+    <div class="section-title">✅ Action Checklist</div>
+
+    <div style="background:#fff; border-radius:10px; padding:14px 18px; margin-bottom:20px; box-shadow:var(--shadow);">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+        <span style="font-weight:700; font-size:0.9rem;">Your Progress</span>
+        <span id="progress-text">0 of 12 done</span>
+      </div>
+      <div style="height:8px; background:#e9ecef; border-radius:4px; overflow:hidden;">
+        <div id="progress-bar-fill" style="width:0%;"></div>
+      </div>
+    </div>
+
+    <div class="checklist-group urgent">
+      <h4>🔴 Urgent — Do These Right Now</h4>
+      <div class="check-item"><input type="checkbox" id="c1" onchange="updateProgress()"><label for="c1"><strong>Apply ESTA for parent</strong> at <a href="https://esta.cbp.dhs.gov" target="_blank">esta.cbp.dhs.gov</a> — USD $21, needed before boarding</label></div>
+      <div class="check-item"><input type="checkbox" id="c2" onchange="updateProgress()"><label for="c2"><strong>Apply ESTA for Arielle</strong> separately at <a href="https://esta.cbp.dhs.gov" target="_blank">esta.cbp.dhs.gov</a> — minors need their own ESTA</label></div>
+      <div class="check-item"><input type="checkbox" id="c3" onchange="updateProgress()"><label for="c3"><strong>Search & book flights</strong> on Skyscanner / Korean Air / united.com — Apr 27 departure from SIN, May 3 return from IAH</label></div>
+      <div class="check-item"><input type="checkbox" id="c4" onchange="updateProgress()"><label for="c4"><strong>Book hotel</strong> via FIRST ConferenceDirect (check <a href="https://www.firstchampionship.org/houston" target="_blank">firstchampionship.org/houston</a>) or book Marriott Marquis directly</label></div>
+    </div>
+
+    <div class="checklist-group soon">
+      <h4>🟡 Soon — Within the Next 2 Weeks</h4>
+      <div class="check-item"><input type="checkbox" id="c5" onchange="updateProgress()"><label for="c5"><strong>Purchase travel insurance</strong> covering medical emergencies and trip cancellation for both travellers</label></div>
+      <div class="check-item"><input type="checkbox" id="c6" onchange="updateProgress()"><label for="c6"><strong>Book Space Center Houston tickets</strong> online at <a href="https://spacecenter.org" target="_blank">spacecenter.org</a> — sells out during FIRST Championship week</label></div>
+      <div class="check-item"><input type="checkbox" id="c7" onchange="updateProgress()"><label for="c7"><strong>Register Arielle for FIRST event badging</strong> — check your team's invitation email from FIRST Inspires</label></div>
+      <div class="check-item"><input type="checkbox" id="c8" onchange="updateProgress()"><label for="c8"><strong>Download travel apps:</strong> Uber, Google Maps, Mobile Passport (US Customs), airline app</label></div>
+    </div>
+
+    <div class="checklist-group prep">
+      <h4>🟢 Before Departure — 1 Week Prior</h4>
+      <div class="check-item"><input type="checkbox" id="c9" onchange="updateProgress()"><label for="c9"><strong>Online check-in</strong> 24–48 hrs before flight. Select seats together (parent + child side-by-side)</label></div>
+      <div class="check-item"><input type="checkbox" id="c10" onchange="updateProgress()"><label for="c10"><strong>Pack Arielle's competition essentials:</strong> team shirt/uniform, robot docs, comfortable sneakers, light cardigan (convention centres are cold)</label></div>
+      <div class="check-item"><input type="checkbox" id="c11" onchange="updateProgress()"><label for="c11"><strong>Notify your bank</strong> of overseas travel to USA Apr 27 – May 3 to prevent card blocks</label></div>
+      <div class="check-item"><input type="checkbox" id="c12" onchange="updateProgress()"><label for="c12"><strong>Confirm hotel early check-in</strong> request, and bring universal travel adapter (SG Type G → US Type A/B)</label></div>
+    </div>
+
+    <div class="card">
+      <h3>🧳 Packing Essentials</h3>
+      <div class="grid-2">
+        <div>
+          <strong style="font-size:0.88rem;">👧 For Arielle</strong>
+          <ul style="font-size:0.84rem; line-height:2; padding-left:18px; margin-top:8px;">
+            <li>FIRST team shirt / uniform</li>
+            <li>Robot documentation / team materials</li>
+            <li>Comfortable closed-toe sneakers</li>
+            <li>Light cardigan / hoodie (A/C indoors)</li>
+            <li>Entertainment (tablet, earphones, books)</li>
+            <li>Healthy snacks for competition days</li>
+          </ul>
+        </div>
+        <div>
+          <strong style="font-size:0.88rem;">📦 General</strong>
+          <ul style="font-size:0.84rem; line-height:2; padding-left:18px; margin-top:8px;">
+            <li>Universal travel adapter (Type G → A/B)</li>
+            <li>USD cash (~$200–300)</li>
+            <li>Portable charger / power bank</li>
+            <li>Medications + basic first aid kit</li>
+            <li>ESTA printout confirmation (both)</li>
+            <li>Light summer clothes (Houston ~28–32°C, humid)</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ CONTACTS ============ -->
+  <div id="tab-contacts" class="tab-panel">
+    <div class="section-title">📞 Useful Contacts & Links</div>
+
+    <div class="grid-2">
+      <div class="contact-card"><div class="contact-icon">🤖</div><div><h5>FIRST Championship</h5><p><a href="https://www.firstchampionship.org/houston" target="_blank">firstchampionship.org/houston</a></p></div></div>
+      <div class="contact-card"><div class="contact-icon">🛂</div><div><h5>ESTA Application (Official)</h5><p><a href="https://esta.cbp.dhs.gov" target="_blank">esta.cbp.dhs.gov</a> | USD $21/person</p></div></div>
+      <div class="contact-card"><div class="contact-icon">🏟️</div><div><h5>George R. Brown Convention Center</h5><p>+1 (832) 667-1000 | 1001 Avenida De Las Americas</p></div></div>
+      <div class="contact-card"><div class="contact-icon">🇸🇬</div><div><h5>Singapore Embassy in Washington DC</h5><p>+1 (202) 537-3100</p></div></div>
+      <div class="contact-card"><div class="contact-icon">🇸🇬</div><div><h5>Singapore Consulate in Houston</h5><p>+1 (713) 623-5850</p></div></div>
+      <div class="contact-card"><div class="contact-icon">🚑</div><div><h5>Houston Emergency</h5><p><strong>911</strong> (Police / Fire / Ambulance)</p></div></div>
+      <div class="contact-card"><div class="contact-icon">ℹ️</div><div><h5>Houston Non-Emergency / Info</h5><p><strong>311</strong></p></div></div>
+      <div class="contact-card"><div class="contact-icon">✈️</div><div><h5>Houston IAH Airport</h5><p>+1 (281) 230-3000 | <a href="https://www.fly2houston.com" target="_blank">fly2houston.com</a></p></div></div>
+    </div>
+
+    <div class="card" style="margin-top:20px;">
+      <h3>🔗 Quick Links</h3>
+      <div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:4px;">
+        <a href="https://esta.cbp.dhs.gov" target="_blank" class="pill pill-red" style="padding:8px 16px;">ESTA Application</a>
+        <a href="https://www.firstchampionship.org/houston" target="_blank" class="pill pill-blue" style="padding:8px 16px;">FIRST Championship</a>
+        <a href="https://www.skyscanner.com" target="_blank" class="pill pill-gold" style="padding:8px 16px;">Skyscanner Flights</a>
+        <a href="https://spacecenter.org" target="_blank" class="pill pill-green" style="padding:8px 16px;">Space Center Houston</a>
+        <a href="https://www.koreanair.com" target="_blank" class="pill pill-blue" style="padding:8px 16px;">Korean Air</a>
+        <a href="https://www.united.com" target="_blank" class="pill pill-blue" style="padding:8px 16px;">United Airlines</a>
+        <a href="https://www.marriott.com" target="_blank" class="pill pill-blue" style="padding:8px 16px;">Marriott Marquis Houston</a>
+        <a href="https://maps.google.com/?q=George+R+Brown+Convention+Center+Houston" target="_blank" class="pill pill-green" style="padding:8px 16px;">Venue on Google Maps</a>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:10px; text-align:center;">
+      <button class="print-btn" style="margin:0 auto;" onclick="window.print()">🖨️ Print / Save as PDF</button>
+      <p style="font-size:0.78rem; color:#aaa; margin-top:10px;">Use your browser's Print → Save as PDF to export this planner</p>
+    </div>
+  </div>
+
+</div><!-- /container -->
+
+<script>
+  function switchTab(name) {
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('tab-' + name).classList.add('active');
+    event.target.classList.add('active');
+  }
+
+  function updateProgress() {
+    const boxes = document.querySelectorAll('.check-item input[type=checkbox]');
+    const checked = [...boxes].filter(b => b.checked).length;
+    const total = boxes.length;
+    const pct = Math.round((checked / total) * 100);
+    document.getElementById('progress-bar-fill').style.width = pct + '%';
+    document.getElementById('progress-text').textContent = checked + ' of ' + total + ' done';
+  }
+</script>
+
+</body>
+</html>
